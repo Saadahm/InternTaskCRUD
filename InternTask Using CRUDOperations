@@ -1,0 +1,158 @@
+#SAAD AHMAD
+#IIT KANPUR -BTECH, MECHANICAL, 2nd Year
+#Question:Create a user table with user id, name and phone number
+#Solution:
+#Using SQL commands,Crud operations, I get the connection, create a new record, read the data
+ 
+#Here I am creating a connection
+import pypyodbc
+import config
+
+def getConnection():
+     connection = pypyodbc.connect("Driver= {"+config.DATABASE_CONFIG["Driver"]+"} ;
+     Server=" + config.DATABASE_CONFIG["Server"] + ";
+     Database=" + config.DATABASE_CONFIG["Database"] + ";
+     uid=" + config.DATABASE_CONFIG["UID"] + ";pwd=" + config.DATABASE_CONFIG["Password"])
+     return connection
+
+import pypyodbc
+import db_connection as dbConn
+from read import Read
+from create import Create
+from update import Update
+from delete import Delete
+
+def main():
+    print('Choose one of the following options: Cr=Create, Re=Read, Up=Update, De=Delete ')
+    choice = input('Choose your option to continue= ')
+
+    if choice == 'Cr':
+        createObj=Create()
+        createObj.func_CreateData()
+    elif choice == 'Re':
+        readObj =  Read()
+        readObj.func_ReadData()
+    elif choice == 'Up':
+        updateObj = Update()
+        updateObj.func_UpdateData()
+    elif choice == 'De':
+        deleteObj = Delete()
+        deleteObj.func_DeleteData()
+    else:
+        print('Wrong choice!')
+main()
+
+#Here I am creating a new record
+import db_connection as dbConn
+#Using Classes
+class Create:
+    def func_CreateData(self):
+
+        connection = dbConn.getConnection()
+                
+        UserId = input('Enter User Id = ')
+        Name = input('Enter Name = ')
+        PhoneNo = input('Enter Phone Number = ')
+
+        try:
+           query = "Insert Into Employee(UserId, Name, PhoneNo) Values(?,?,?)" 
+           cursor = connection.cursor()
+
+           # Executing the sql query
+           cursor.execute(query, [UserId, Name, Phone No])
+
+           connection.commit()
+           print('Data Saved Successfully')
+
+        except:
+             print('Something Wrong!')
+
+        finally:
+           connection.close()
+  
+#Here I am reading the data
+import db_connection as dbConn
+#Make a class
+class Read:
+    def func_ReadData(self): 
+        connection = dbConn.getConnection()
+        cursor = connection.cursor()
+        cursor.execute('Select * from Employee')
+
+           for row in cursor:
+            print('row = %r' % (row,))
+
+#Here I am updating the existing record
+import db_connection as dbConn;
+
+class Update:
+    def func_UpdateData(self):
+        # Getting the SQL connection
+        connection = dbConn.getConnection()
+
+        Id = input('Enter the user Id = ')
+    
+        try:
+           
+           sql = "Select * From Employee Where Id = ?" 
+           cursor = connection.cursor()
+           cursor.execute(sql, [id])
+           item = cursor.fetchone()
+           print('Data Fetched for Id = ', id)
+           print('ID\t\t UserId\t\t\t Name\t\t\tPhoneNo ')
+           print('Next')       
+           print(' {}\t\t {} \t\t\t{} '.format(item[0], item[1], item[2], item[3]))
+           print('-------------------------------------------')
+           print('Enter New Data To Update User Record ')
+
+           UserId = input('Enter New UserId = ')
+           Name = input('Enter New Name = ')
+           PhoneNo = input('Enter Phone Number = ')
+
+           query = "Update Employee Set UserId = ?, Name =?, PhoneNo=?  Where Id =?" 
+       
+           # Executing the update query
+           cursor.execute(query, [UserId, Name,PhoneNo, id])
+           connection.commit()
+           print('Data Updated Successfully')
+
+        except:
+             print('Something wrong, please check')
+
+        finally:
+           connection.close()
+#Finally Deleting the Data
+import db_connection as dbConn;
+
+class Delete:
+    def func_DeleteData(self):
+        # Get the SQL connection
+        connection = dbConn.getConnection()
+
+        id = input('Enter Employee Id = ')
+    
+        try:
+           sql = "Select * From Employee Where Id = ?" 
+           cursor = connection.cursor()
+           cursor.execute(sql, [id])
+           item = cursor.fetchone()
+           print('Data Fetched for Id = ', id)
+           print('ID\t\t UserId\t\t\t Name\t\t\tPhoneNo ')
+           print('Next’)
+           print(' {}\t\t {} \t\t\t{} '.format(item[0], item[1], item[2], item[3]))
+           print('-------------------------------------------')
+           confirm = input('Are you sure to delete this record (Yes/No)?')
+           if confirm == 'Yes':
+               deleteQuery = "Delete From Employee Where Id = ?"
+               cursor.execute(deleteQuery,[id])
+               connection.commit()
+               print('Data deleted successfully!')
+           else:
+                print('Wrong Entry')
+        except:
+            print('Wrong!Try Again')
+        finally:
+            connection.close()
+
+
+
